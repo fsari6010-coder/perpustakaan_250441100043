@@ -50,12 +50,16 @@ Route::get('/buku', [BukuController::class, 'index'])
     ->middleware(['auth', 'permission:lihat daftar buku'])
     ->name('buku.index');
 
+Route::get('/buku/create', [BukuController::class, 'index'])
+    ->middleware(['auth', 'can:kelola-buku'])
+    ->name('buku.create');
+
 Route::get('/buku-cari', [BukuController::class, 'cari'])
     ->middleware('auth')
     ->name('buku.cari');
 
 Route::delete('/buku/{id}', [BukuController::class, 'destroy'])
-    ->middleware(['auth', 'permission:kelola data buku'])
+    ->middleware(['auth', 'can:kelola-buku'])
     ->name('buku.hapus');
 
 // Profile pengguna

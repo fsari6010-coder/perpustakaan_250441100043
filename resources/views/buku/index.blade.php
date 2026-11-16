@@ -6,7 +6,7 @@
 
 <div class="crud-container"
     id="halamanBuku"
-    data-boleh-kelola="{{ auth()->user()->can('kelola data buku') ? '1' : '0' }}">
+    data-boleh-kelola="{{ auth()->user()->can('kelola-buku') ? '1' : '0' }}">
 
     <div class="crud-card">
 
@@ -14,7 +14,7 @@
 
         <div id="pesan" class="crud-message"></div>
 
-        @can('kelola data buku')
+        @can('kelola-buku')
         <h3 id="judulForm">Tambah Buku</h3>
 
         <form id="formBuku" class="crud-form">
@@ -69,7 +69,7 @@
                         <th>Penulis</th>
                         <th>Tahun Terbit</th>
 
-                        @can('kelola data buku')
+                        @can('kelola-buku')
                         <th>Aksi</th>
                         @endcan
                     </tr>
@@ -83,7 +83,7 @@
                         <td>{{ $item->penulis }}</td>
                         <td>{{ $item->tahun_terbit }}</td>
 
-                        @can('kelola data buku')
+                        @can('kelola-buku')
                         <td>
                             <button type="button"
                                 class="crud-btn crud-btn-primary">
@@ -326,6 +326,7 @@
             }
         });
     }
+    tampilkanBuku();
 </script>
 
 @endsection

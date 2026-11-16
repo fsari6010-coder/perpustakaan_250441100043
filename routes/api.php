@@ -13,7 +13,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Menambah, mengubah, dan menghapus buku
-    Route::middleware('permission:kelola data buku')->group(function () {
+    Route::middleware('can:kelola-buku')->group(function () {
         Route::post('buku', [BukuController::class, 'store']);
         Route::put('buku/{buku}', [BukuController::class, 'update']);
         Route::patch('buku/{buku}', [BukuController::class, 'update']);
