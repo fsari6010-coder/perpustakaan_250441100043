@@ -10,12 +10,12 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Membuat akun Admin
-        $admin = User::firstOrCreate(
+        // Membuat atau memperbarui akun Admin
+        $admin = User::updateOrCreate(
             ['email' => 'admin@gmail.com'],
             [
                 'name' => 'Administrator',
-                'password' => Hash::make('admin12345'),
+                'password' => Hash::make(env('ADMIN_INITIAL_PASSWORD')),
             ]
         );
 
