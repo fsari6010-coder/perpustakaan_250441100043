@@ -79,7 +79,7 @@
                     @foreach ($buku as $item)
                     <tr>
                         <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
-                        <td>{!! $item->judul !!}</td>
+                        <td>{{ $item->judul }}</td>
                         <td>{{ $item->penulis }}</td>
                         <td>{{ $item->tahun_terbit }}</td>
 
@@ -90,10 +90,16 @@
                                 ubah
                             </button>
 
-                            <button type="button"
-                                class="crud-btn crud-btn-danger">
-                                hapus
-                            </button>
+                            <form action="{{ route('buku.hapus', $item->id) }}" method="POST" style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                    class="crud-btn crud-btn-danger"
+                                    onclick="return confirm('Yakin ingin menghapus buku ini?')">
+                                    hapus
+                                </button>
+                            </form>
                         </td>
                         @endcan
                     </tr>
@@ -263,7 +269,7 @@
             }
 
             tampilkanPesan('Data buku berhasil dihapus.');
-      
+
 
         } catch (error) {
             tampilkanPesan(error.message, 'error');
@@ -313,15 +319,13 @@
                 );
 
                 resetForm();
-             
+
 
             } catch (error) {
                 tampilkanPesan(error.message, 'error');
             }
         });
     }
-
-
 </script>
 
 @endsection

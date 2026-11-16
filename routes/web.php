@@ -54,9 +54,10 @@ Route::get('/buku-cari', [BukuController::class, 'cari'])
     ->middleware('auth')
     ->name('buku.cari');
 
-Route::get('/buku/{id}/hapus', [BukuController::class, 'destroy'])
-    ->middleware('auth')
+Route::delete('/buku/{id}', [BukuController::class, 'destroy'])
+    ->middleware(['auth', 'permission:kelola data buku'])
     ->name('buku.hapus');
+
 // Profile pengguna
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])
