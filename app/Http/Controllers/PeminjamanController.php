@@ -59,4 +59,14 @@ class PeminjamanController extends Controller
             ->route('peminjaman.index')
             ->with('success', 'Buku berhasil dikembalikan.');
     }
+
+
+    // Menampilkan detail peminjaman (pengujian IDOR)
+    public function show($id)
+    {
+        $peminjaman = Peminjaman::with(['anggota', 'buku'])
+            ->findOrFail($id);
+
+        return view('peminjaman.show', compact('peminjaman'));
+    }
 }

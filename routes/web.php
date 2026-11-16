@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PeminjamanController;
 use App\Models\Peminjaman;
+use App\Http\Controllers\BukuController;
 use App\Http\Controllers\LaporanController;
 
 // Halaman utama
@@ -32,24 +33,30 @@ Route::get('/dashboard', function () {
 Route::get('/admin/dashboard', function () {
     return view('admin.dashboard');
 })->middleware(['auth', 'permission:akses dashboard admin'])
-  ->name('admin.dashboard');
+    ->name('admin.dashboard');
 // Dashboard Petugas
 Route::get('/petugas/dashboard', function () {
     return view('petugas.dashboard');
 })->middleware(['auth', 'permission:akses dashboard petugas'])
-  ->name('petugas.dashboard');
+    ->name('petugas.dashboard');
 
 // Dashboard Siswa
 Route::get('/siswa/dashboard', function () {
     return view('siswa.dashboard');
 })->middleware(['auth', 'role:siswa'])
-  ->name('siswa.dashboard');
-  // Halaman Daftar Buku
-Route::get('/buku', function () {
-    return view('buku.index');
-})->middleware(['auth', 'permission:lihat daftar buku'])
-  ->name('buku.index');
+    ->name('siswa.dashboard');
+// Halaman Daftar Buku
+Route::get('/buku', [BukuController::class, 'index'])
+    ->middleware(['auth', 'permission:lihat daftar buku'])
+    ->name('buku.index');
 
+Route::get('/buku-cari', [BukuController::class, 'cari'])
+    ->middleware('auth')
+    ->name('buku.cari');
+
+Route::get('/buku/{id}/hapus', [BukuController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('buku.hapus');
 // Profile pengguna
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])
@@ -72,7 +79,6 @@ Route::middleware(['auth', 'permission:kelola data pengguna'])->group(function (
 
     Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])
         ->name('users.updateRole');
-
 });
 
 
@@ -85,6 +91,10 @@ Route::middleware(['auth', 'permission:kelola peminjaman'])->group(function () {
     Route::post('/peminjaman', [PeminjamanController::class, 'store'])
         ->name('peminjaman.store');
 });
+
+// Pengujian IDOR (A4)
+Route::get('/peminjaman/{id}', [PeminjamanController::class, 'show'])
+    ->name('peminjaman.show');
 
 Route::patch('/peminjaman/{peminjaman}/kembali', [PeminjamanController::class, 'kembali'])
     ->middleware(['auth', 'role:admin|petugas'])
@@ -102,7 +112,7 @@ Route::get('/riwayat-peminjaman', function () {
 
     return view('peminjaman.riwayat', compact('peminjamans'));
 })->middleware(['auth', 'role:siswa'])
-  ->name('peminjaman.riwayat');
+    ->name('peminjaman.riwayat');
 
 // Laporan Perpustakaan
 Route::get('/laporan', [LaporanController::class, 'index'])

@@ -5,8 +5,8 @@
 @section('content')
 
 <div class="crud-container"
-     id="halamanBuku"
-     data-boleh-kelola="{{ auth()->user()->can('kelola data buku') ? '1' : '0' }}">
+    id="halamanBuku"
+    data-boleh-kelola="{{ auth()->user()->can('kelola data buku') ? '1' : '0' }}">
 
     <div class="crud-card">
 
@@ -15,42 +15,42 @@
         <div id="pesan" class="crud-message"></div>
 
         @can('kelola data buku')
-            <h3 id="judulForm">Tambah Buku</h3>
+        <h3 id="judulForm">Tambah Buku</h3>
 
-            <form id="formBuku" class="crud-form">
+        <form id="formBuku" class="crud-form">
 
-                <div class="crud-field">
-                    <label for="kategori_id">ID Kategori</label>
-                    <input type="number" id="kategori_id" name="kategori_id" required>
-                </div>
+            <div class="crud-field">
+                <label for="kategori_id">ID Kategori</label>
+                <input type="number" id="kategori_id" name="kategori_id" required>
+            </div>
 
-                <div class="crud-field">
-                    <label for="judul">Judul Buku</label>
-                    <input type="text" id="judul" name="judul" required>
-                </div>
+            <div class="crud-field">
+                <label for="judul">Judul Buku</label>
+                <input type="text" id="judul" name="judul" required>
+            </div>
 
-                <div class="crud-field">
-                    <label for="penulis">Penulis</label>
-                    <input type="text" id="penulis" name="penulis" required>
-                </div>
+            <div class="crud-field">
+                <label for="penulis">Penulis</label>
+                <input type="text" id="penulis" name="penulis" required>
+            </div>
 
-                <div class="crud-field">
-                    <label for="tahun_terbit">Tahun Terbit</label>
-                    <input type="number" id="tahun_terbit" name="tahun_terbit" required>
-                </div>
+            <div class="crud-field">
+                <label for="tahun_terbit">Tahun Terbit</label>
+                <input type="number" id="tahun_terbit" name="tahun_terbit" required>
+            </div>
 
-                <div class="crud-actions">
-                    <button type="submit" class="crud-btn crud-btn-primary" id="tombolSimpan">
-                        Simpan
-                    </button>
+            <div class="crud-actions">
+                <button type="submit" class="crud-btn crud-btn-primary" id="tombolSimpan">
+                    Simpan
+                </button>
 
-                    <button type="button" class="crud-btn crud-btn-secondary"
-                            id="tombolBatal" onclick="resetForm()">
-                        Batal
-                    </button>
-                </div>
+                <button type="button" class="crud-btn crud-btn-secondary"
+                    id="tombolBatal" onclick="resetForm()">
+                    Batal
+                </button>
+            </div>
 
-            </form>
+        </form>
         @endcan
 
     </div>
@@ -60,6 +60,7 @@
         <h2>Daftar Buku</h2>
 
         <div class="crud-table">
+
             <table>
                 <thead>
                     <tr>
@@ -69,15 +70,34 @@
                         <th>Tahun Terbit</th>
 
                         @can('kelola data buku')
-                            <th>Aksi</th>
+                        <th>Aksi</th>
                         @endcan
                     </tr>
                 </thead>
 
                 <tbody id="tabelBuku">
+                    @foreach ($buku as $item)
                     <tr>
-                        <td colspan="5">Memuat data buku...</td>
+                        <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
+                        <td>{!! $item->judul !!}</td>
+                        <td>{{ $item->penulis }}</td>
+                        <td>{{ $item->tahun_terbit }}</td>
+
+                        @can('kelola data buku')
+                        <td>
+                            <button type="button"
+                                class="crud-btn crud-btn-primary">
+                                ubah
+                            </button>
+
+                            <button type="button"
+                                class="crud-btn crud-btn-danger">
+                                hapus
+                            </button>
+                        </td>
+                        @endcan
                     </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -131,9 +151,8 @@
                 throw new Error(hasil.message || 'Gagal mengambil data buku.');
             }
 
-            const daftarBuku = Array.isArray(hasil.data)
-                ? hasil.data
-                : [];
+            const daftarBuku = Array.isArray(hasil.data) ?
+                hasil.data : [];
 
             tabelBuku.innerHTML = '';
 
@@ -151,10 +170,10 @@
             daftarBuku.forEach(buku => {
                 const baris = document.createElement('tr');
 
-                const kategori = buku.kategori?.nama_kategori
-                    ?? buku.kategori?.nama
-                    ?? buku.kategori_id
-                    ?? '-';
+                const kategori = buku.kategori?.nama_kategori ??
+                    buku.kategori?.nama ??
+                    buku.kategori_id ??
+                    '-';
 
                 baris.innerHTML = `
                     <td>${kategori}</td>
@@ -244,7 +263,7 @@
             }
 
             tampilkanPesan('Data buku berhasil dihapus.');
-            tampilkanBuku();
+      
 
         } catch (error) {
             tampilkanPesan(error.message, 'error');
@@ -288,13 +307,13 @@
                 }
 
                 tampilkanPesan(
-                    idUbah
-                        ? 'Data buku berhasil diperbarui.'
-                        : 'Data buku berhasil ditambahkan.'
+                    idUbah ?
+                    'Data buku berhasil diperbarui.' :
+                    'Data buku berhasil ditambahkan.'
                 );
 
                 resetForm();
-                tampilkanBuku();
+             
 
             } catch (error) {
                 tampilkanPesan(error.message, 'error');
@@ -302,7 +321,7 @@
         });
     }
 
-    tampilkanBuku();
+
 </script>
 
 @endsection
