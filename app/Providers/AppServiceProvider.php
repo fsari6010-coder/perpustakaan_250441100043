@@ -4,21 +4,27 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\URL; // <-- Tambahkan namespace ini
+use Illuminate\Support\Facades\URL;
 use App\Models\Peminjaman;
 use App\Policies\PeminjamanPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * Register any application services.
+     */
     public function register(): void
     {
         //
     }
 
+    /**
+     * Bootstrap any application services.
+     */
     public function boot(): void
     {
-        // Paksa HTTPS untuk semua aset di lingkungan Production (Vercel)
-        if ($this->app->environment('production')) {
+        // Paksa HTTPS jika berjalan di Vercel atau environment production
+        if ($this->app->environment('production') || str_contains(request()->getHost(), '.vercel.app')) {
             URL::forceScheme('https');
         }
 
