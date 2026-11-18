@@ -47,33 +47,30 @@ Route::get('/siswa/dashboard', function () {
 })->middleware(['auth', 'role:siswa'])
     ->name('siswa.dashboard');
 
-// Halaman Daftar Buku (Web View)
-Route::get('/buku', [BukuController::class, 'index'])
-    ->middleware(['auth', 'permission:lihat daftar buku'])
-    ->name('buku.index');
-
-// Form Tambah Buku
-Route::get('/buku/create', [BukuController::class, 'create'])
-    ->middleware(['auth', 'can:kelola-buku'])
-    ->name('buku.create');
-
-Route::get('/buku-cari', [BukuController::class, 'cari'])
-    ->middleware('auth')
-    ->name('buku.cari');
-
-Route::delete('/buku/{id}', [BukuController::class, 'destroy'])
-    ->middleware(['auth', 'can:kelola-buku'])
-    ->name('buku.hapus');
-
 // ==========================================
-// ENDPOINT API (UNTUK JAVASCRIPT FETCH DI VIEW)
+// RUTE CRUD BUKU (LENGKAP GET, POST, PUT, DELETE)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
-    Route::get('/api/buku', [BukuController::class, 'apiIndex']);
-    Route::get('/api/buku/{id}', [BukuController::class, 'apiShow']);
-    Route::post('/api/buku', [BukuController::class, 'store']);
-    Route::put('/api/buku/{id}', [BukuController::class, 'update']);
-    Route::delete('/api/buku/{id}', [BukuController::class, 'destroy']);
+    // Menampilkan halaman / data buku (GET)
+    Route::get('/buku', [BukuController::class, 'index'])->name('buku.index');
+    
+    // Menyimpan data buku baru (POST) -> INI YANG DARI TADI DICARI JAVASCRIPT
+    Route::post('/buku', [BukuController::class, 'store'])->name('buku.store');
+    
+    // Form tambah buku (Opsional jika pakai halaman terpisah)
+    Route::get('/buku/create', [BukuController::class, 'create'])->name('buku.create');
+    
+    // Pencarian buku
+    Route::get('/buku-cari', [BukuController::class, 'cari'])->name('buku.cari');
+    
+    // Detail satu buku untuk edit (GET)
+    Route::get('/buku/{id}', [BukuController::class, 'apiShow']);
+    
+    // Memperbarui data buku (PUT / PATCH)
+    Route::put('/buku/{id}', [BukuController::class, 'update'])->name('buku.update');
+    
+    // Menghapus data buku (DELETE)
+    Route::delete('/buku/{id}', [BukuController::class, 'destroy'])->name('buku.hapus');
 });
 
 // Profile pengguna
