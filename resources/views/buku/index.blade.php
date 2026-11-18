@@ -269,7 +269,7 @@
             }
 
             tampilkanPesan('Data buku berhasil dihapus.');
-
+            tampilkanBuku(); // <-- Ditambahkan agar tabel otomatis refresh setelah hapus
 
         } catch (error) {
             tampilkanPesan(error.message, 'error');
@@ -319,13 +319,14 @@
                 );
 
                 resetForm();
-
+                tampilkanBuku(); // <-- Ditambahkan agar tabel otomatis refresh setelah tambah/ubah
 
             } catch (error) {
                 tampilkanPesan(error.message, 'error');
             }
         });
     }
+    
     tampilkanBuku();
 </script>
 
