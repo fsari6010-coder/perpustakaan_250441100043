@@ -3,26 +3,34 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Buku; // Sesuaikan dengan model buku kamu
+use App\Models\Buku;
 
 class BukuController extends Controller
 {
+    /**
+     * Menampilkan daftar buku.
+     */
     public function index()
     {
-        // Kode untuk menampilkan daftar buku
-        $bukus = Buku::all();
-        return view('buku.index', compact('bukus'));
+        // Menggunakan nama variabel $buku agar sesuai dengan view index.blade.php
+        $buku = Buku::all(); 
+        return view('buku.index', compact('buku'));
     }
 
+    /**
+     * Menampilkan form tambah buku.
+     */
     public function create()
     {
-        // Menampilkan form tambah buku (jika pakai halaman terpisah)
         return view('buku.create');
     }
 
+    /**
+     * Menyimpan data buku baru ke database.
+     */
     public function store(Request $request)
     {
-        // 1. Validasi inputan dari form
+        // Validasi inputan form tambah buku
         $request->validate([
             'kategori_id' => 'required',
             'judul' => 'required|string|max:255',
@@ -30,7 +38,7 @@ class BukuController extends Controller
             'tahun_terbit' => 'required|numeric',
         ]);
 
-        // 2. Simpan ke database
+        // Simpan data ke database Supabase
         Buku::create([
             'kategori_id' => $request->kategori_id,
             'judul' => $request->judul,
@@ -38,13 +46,27 @@ class BukuController extends Controller
             'tahun_terbit' => $request->tahun_terbit,
         ]);
 
-        // 3. Redirect kembali dengan pesan sukses
         return redirect()->route('buku.index')->with('success', 'Buku berhasil ditambahkan!');
     }
 
+    /**
+     * Pencarian buku.
+     */
+    public function cari(Request $request)
+    {
+        $keyword = $request->input('q');
+        $buku = Buku::where('judul', 'LIKE', "%{$keyword}%")
+                    ->orWhere('penulis', 'LIKE', "%{$keyword}%")
+                    ->get();
+
+        return view('buku.index', compact('buku'));
+    }
+
+    /**
+     * Menghapus data buku.
+     */
     public function destroy($id)
     {
-        // Kode untuk hapus buku
         $buku = Buku::findOrFail($id);
         $buku->delete();
 
