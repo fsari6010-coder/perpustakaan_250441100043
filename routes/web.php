@@ -34,6 +34,7 @@ Route::get('/admin/dashboard', function () {
     return view('admin.dashboard');
 })->middleware(['auth', 'permission:akses dashboard admin'])
     ->name('admin.dashboard');
+
 // Dashboard Petugas
 Route::get('/petugas/dashboard', function () {
     return view('petugas.dashboard');
@@ -45,14 +46,21 @@ Route::get('/siswa/dashboard', function () {
     return view('siswa.dashboard');
 })->middleware(['auth', 'role:siswa'])
     ->name('siswa.dashboard');
+
 // Halaman Daftar Buku
 Route::get('/buku', [BukuController::class, 'index'])
     ->middleware(['auth', 'permission:lihat daftar buku'])
     ->name('buku.index');
 
-Route::get('/buku/create', [BukuController::class, 'index'])
+// Form Tambah Buku (Diperbaiki mengarah ke method 'create')
+Route::get('/buku/create', [BukuController::class, 'create'])
     ->middleware(['auth', 'can:kelola-buku'])
     ->name('buku.create');
+
+// Simpan Buku Baru (Ditambahkan agar proses tambah data bisa berjalan)
+Route::post('/buku', [BukuController::class, 'store'])
+    ->middleware(['auth', 'can:kelola-buku'])
+    ->name('buku.store');
 
 Route::get('/buku-cari', [BukuController::class, 'cari'])
     ->middleware('auth')
@@ -78,7 +86,6 @@ Route::middleware('auth')->group(function () {
 
 // Pengelolaan Pengguna (Khusus Admin)
 Route::middleware(['auth', 'permission:kelola data pengguna'])->group(function () {
-
     Route::get('/users', [UserController::class, 'index'])
         ->name('users.index');
 
@@ -86,10 +93,8 @@ Route::middleware(['auth', 'permission:kelola data pengguna'])->group(function (
         ->name('users.updateRole');
 });
 
-
 // Pengelolaan Peminjaman
 Route::middleware(['auth', 'permission:kelola peminjaman'])->group(function () {
-
     Route::get('/peminjaman', [PeminjamanController::class, 'index'])
         ->name('peminjaman.index');
 
@@ -104,7 +109,6 @@ Route::get('/peminjaman/{id}', [PeminjamanController::class, 'show'])
 Route::patch('/peminjaman/{peminjaman}/kembali', [PeminjamanController::class, 'kembali'])
     ->middleware(['auth', 'role:admin|petugas'])
     ->name('peminjaman.kembali');
-
 
 // Riwayat Peminjaman Siswa
 Route::get('/riwayat-peminjaman', function () {
