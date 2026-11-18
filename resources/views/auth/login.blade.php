@@ -3,6 +3,7 @@
         <div class="auth-heading">
             <h2>Selamat Datang Kembali!</h2>
             <p>Silakan masuk untuk mengakses Perpustakaan Kita.</p>
+            <p style="font-size: 0.85rem; color: #666;">NIM: 250441100043</p>
         </div>
 
         <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -20,8 +21,7 @@
                     :value="old('email')"
                     required
                     autofocus
-                    autocomplete="username"
-                />
+                    autocomplete="username" />
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
 
@@ -33,8 +33,7 @@
                     type="password"
                     name="password"
                     required
-                    autocomplete="current-password"
-                />
+                    autocomplete="current-password" />
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
 
@@ -43,17 +42,16 @@
                     <input
                         id="remember_me"
                         type="checkbox"
-                        name="remember"
-                    >
+                        name="remember">
                     <span>Remember me</span>
                 </label>
             </div>
 
             <div class="auth-actions">
                 @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}">
-                        Forgot your password?
-                    </a>
+                <a href="{{ route('password.request') }}">
+                    Forgot your password?
+                </a>
                 @endif
 
                 <x-primary-button>
