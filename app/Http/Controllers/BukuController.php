@@ -8,24 +8,31 @@ use App\Models\Buku;
 class BukuController extends Controller
 {
     /**
-     * Menampilkan halaman view daftar buku (untuk request biasa).
+     * Menampilkan halaman view daftar buku.
      */
     public function index()
     {
-        $buku = Buku::with('kategori')->get(); 
+        $buku = Buku::all(); 
         return view('buku.index', compact('buku'));
     }
 
     /**
-     * API: Mengambil semua data buku dalam format JSON untuk fetch JavaScript.
+     * API: Mengambil semua data buku dalam format JSON (Aman dari error HTML).
      */
     public function apiIndex()
     {
-        $buku = Buku::with('kategori')->get();
-        return response()->json([
-            'success' => true,
-            'data' => $buku
-        ]);
+        try {
+            $buku = Buku::all();
+            return response()->json([
+                'success' => true,
+                'data' => $buku
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -33,19 +40,18 @@ class BukuController extends Controller
      */
     public function apiShow($id)
     {
-        $buku = Buku::with('kategori')->find($id);
-
-        if (!$buku) {
+        try {
+            $buku = Buku::findOrFail($id);
+            return response()->json([
+                'success' => true,
+                'data' => $buku
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Data buku tidak ditemukan.'
+                'message' => 'Buku tidak ditemukan.'
             ], 404);
         }
-
-        return response()->json([
-            'success' => true,
-            'data' => $buku
-        ]);
     }
 
     /**
@@ -57,7 +63,7 @@ class BukuController extends Controller
     }
 
     /**
-     * Menyimpan data buku baru.
+     * Menyimpan data buku baru (Mendukung AJAX & Form biasa).
      */
     public function store(Request $request)
     {
@@ -144,8 +150,7 @@ class BukuController extends Controller
     public function cari(Request $request)
     {
         $keyword = $request->input('q');
-        $buku = Buku::with('kategori')
-                    ->where('judul', 'LIKE', "%{$keyword}%")
+        $buku = Buku::where('judul', 'LIKE', "%{$keyword}%")
                     ->orWhere('penulis', 'LIKE', "%{$keyword}%")
                     ->get();
 

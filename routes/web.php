@@ -47,7 +47,7 @@ Route::get('/siswa/dashboard', function () {
 })->middleware(['auth', 'role:siswa'])
     ->name('siswa.dashboard');
 
-// Halaman Daftar Buku
+// Halaman Daftar Buku (Web View)
 Route::get('/buku', [BukuController::class, 'index'])
     ->middleware(['auth', 'permission:lihat daftar buku'])
     ->name('buku.index');
@@ -56,11 +56,6 @@ Route::get('/buku', [BukuController::class, 'index'])
 Route::get('/buku/create', [BukuController::class, 'create'])
     ->middleware(['auth', 'can:kelola-buku'])
     ->name('buku.create');
-
-// Simpan Buku Baru (Form Submit biasa)
-Route::post('/buku', [BukuController::class, 'store'])
-    ->middleware(['auth', 'can:kelola-buku'])
-    ->name('buku.store');
 
 Route::get('/buku-cari', [BukuController::class, 'cari'])
     ->middleware('auth')
@@ -71,7 +66,7 @@ Route::delete('/buku/{id}', [BukuController::class, 'destroy'])
     ->name('buku.hapus');
 
 // ==========================================
-// ENDPOINT API (PENDUKUNG JAVASCRIPT FETCH DI VIEW)
+// ENDPOINT API (UNTUK JAVASCRIPT FETCH DI VIEW)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
     Route::get('/api/buku', [BukuController::class, 'apiIndex']);
