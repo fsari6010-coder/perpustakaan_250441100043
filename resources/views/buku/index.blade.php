@@ -78,7 +78,7 @@
                 <tbody id="tabelBuku">
                     @foreach ($buku as $item)
                     <tr>
-                        <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
+                        <td>{{ $item->kategori_id ?? '-' }}</td>
                         <td>{{ $item->judul }}</td>
                         <td>{{ $item->penulis }}</td>
                         <td>{{ $item->tahun_terbit }}</td>
@@ -86,20 +86,16 @@
                         @can('kelola-buku')
                         <td>
                             <button type="button"
-                                class="crud-btn crud-btn-primary">
-                                ubah
+                                class="crud-btn crud-btn-primary"
+                                onclick="editBuku({{ $item->id }})">
+                                Ubah
                             </button>
 
-                            <form action="{{ route('buku.hapus', $item->id) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-
-                                <button type="submit"
-                                    class="crud-btn crud-btn-danger"
-                                    onclick="return confirm('Yakin ingin menghapus buku ini?')">
-                                    hapus
-                                </button>
-                            </form>
+                            <button type="button"
+                                class="crud-btn crud-btn-danger"
+                                onclick="hapusBuku({{ $item->id }})">
+                                Hapus
+                            </button>
                         </td>
                         @endcan
                     </tr>
@@ -113,7 +109,8 @@
 </div>
 
 <script>
-    const api = '/api/buku';
+    // Diarahkan langsung ke /buku agar klop dengan route web Laravel yang ada
+    const api = '/buku';
 
     const halamanBuku = document.getElementById('halamanBuku');
     const bolehKelolaBuku = halamanBuku.dataset.bolehKelola === '1';
@@ -158,7 +155,7 @@
             }
 
             const daftarBuku = Array.isArray(hasil.data) ?
-                hasil.data : [];
+                hasil.data : (Array.isArray(hasil) ? hasil : []);
 
             tabelBuku.innerHTML = '';
 
@@ -176,13 +173,8 @@
             daftarBuku.forEach(buku => {
                 const baris = document.createElement('tr');
 
-                const kategori = buku.kategori?.nama_kategori ??
-                    buku.kategori?.nama ??
-                    buku.kategori_id ??
-                    '-';
-
                 baris.innerHTML = `
-                    <td>${kategori}</td>
+                    <td>${buku.kategori_id ?? '-'}</td>
                     <td>${buku.judul ?? '-'}</td>
                     <td>${buku.penulis ?? '-'}</td>
                     <td>${buku.tahun_terbit ?? '-'}</td>
@@ -207,13 +199,7 @@
             });
 
         } catch (error) {
-            tabelBuku.innerHTML = `
-                <tr>
-                    <td colspan="${bolehKelolaBuku ? 5 : 4}">
-                        ${error.message}
-                    </td>
-                </tr>
-            `;
+            console.error(error);
         }
     }
 
@@ -231,7 +217,7 @@
                 throw new Error(hasil.message || 'Gagal mengambil detail buku.');
             }
 
-            const buku = hasil.data;
+            const buku = hasil.data ?? hasil;
 
             document.getElementById('kategori_id').value = buku.kategori_id ?? '';
             document.getElementById('judul').value = buku.judul ?? '';
@@ -269,7 +255,7 @@
             }
 
             tampilkanPesan('Data buku berhasil dihapus.');
-            tampilkanBuku(); // <-- Ditambahkan agar tabel otomatis refresh setelah hapus
+            tampilkanBuku();
 
         } catch (error) {
             tampilkanPesan(error.message, 'error');
@@ -319,15 +305,13 @@
                 );
 
                 resetForm();
-                tampilkanBuku(); // <-- Ditambahkan agar tabel otomatis refresh setelah tambah/ubah
+                tampilkanBuku();
 
             } catch (error) {
                 tampilkanPesan(error.message, 'error');
             }
         });
     }
-    
-    tampilkanBuku();
 </script>
 
 @endsection
