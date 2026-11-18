@@ -3,23 +3,10 @@
   "outputDirectory": "public",
   "functions": {
     "api/index.php": {
-      "runtime": "vercel-php@0.9.0",
-      "includeFiles": "storage/**"
+      "runtime": "vercel-php@0.9.0"
     }
   },
   "routes": [
-    {
-      "src": "/build/(.*)",
-      "dest": "/build/$1"
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/public/favicon.ico"
-    },
-    {
-      "src": "/robots.txt",
-      "dest": "/public/robots.txt"
-    },
     {
       "src": "/(.*)",
       "dest": "/api/index.php"
