@@ -12,8 +12,13 @@ class BukuController extends Controller
      */
     public function index()
     {
-        // Menggunakan nama variabel $buku agar sesuai dengan view index.blade.php
         $buku = Buku::all(); 
+        
+        // Jika request mengharapkan JSON (AJAX)
+        if (request()->expectsJson()) {
+            return response()->json($buku);
+        }
+
         return view('buku.index', compact('buku'));
     }
 
@@ -30,23 +35,45 @@ class BukuController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi inputan form tambah buku
-        $request->validate([
-            'kategori_id' => 'required',
-            'judul' => 'required|string|max:255',
-            'penulis' => 'required|string|max:255',
-            'tahun_terbit' => 'required|numeric',
-        ]);
+        try {
+            // Validasi inputan form
+            $request->validate([
+                'kategori_id' => 'required',
+                'judul' => 'required|string|max:255',
+                'penulis' => 'required|string|max:255',
+                'tahun_terbit' => 'required|numeric',
+            ]);
 
-        // Simpan data ke database Supabase
-        Buku::create([
-            'kategori_id' => $request->kategori_id,
-            'judul' => $request->judul,
-            'penulis' => $request->penulis,
-            'tahun_terbit' => $request->tahun_terbit,
-        ]);
+            // Simpan data ke database Supabase
+            $buku = Buku::create([
+                'kategori_id' => $request->kategori_id,
+                'judul' => $request->judul,
+                'penulis' => $request->penulis,
+                'tahun_terbit' => $request->tahun_terbit,
+            ]);
 
-        return redirect()->route('buku.index')->with('success', 'Buku berhasil ditambahkan!');
+            // Jika dikirim lewat AJAX/Fetch
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Buku berhasil ditambahkan!',
+                    'data' => $buku
+                ]);
+            }
+
+            return redirect()->route('buku.index')->with('success', 'Buku berhasil ditambahkan!');
+
+        } catch (\Exception $e) {
+            // Tangkap error jika validasi/simpan gagal agar tidak merusak format JSON
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ], 422);
+            }
+
+            return redirect()->back()->withErrors($e->getMessage())->withInput();
+        }
     }
 
     /**
@@ -65,10 +92,17 @@ class BukuController extends Controller
     /**
      * Menghapus data buku.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $buku = Buku::findOrFail($id);
         $buku->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Buku berhasil dihapus!'
+            ]);
+        }
 
         return redirect()->route('buku.index')->with('success', 'Buku berhasil dihapus!');
     }
