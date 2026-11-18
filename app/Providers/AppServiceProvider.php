@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL; // <-- Tambahkan namespace ini
 use App\Models\Peminjaman;
 use App\Policies\PeminjamanPolicy;
 
@@ -16,6 +17,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Paksa HTTPS untuk semua aset di lingkungan Production (Vercel)
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         // Policy untuk mengatur akses data peminjaman
         Gate::policy(Peminjaman::class, PeminjamanPolicy::class);
 
